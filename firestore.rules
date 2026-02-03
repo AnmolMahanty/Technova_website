@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to get user role
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    // Helper function to check if user is student or admin
+    function isStudentOrAdmin() {
+      return isAuthenticated() && (getUserRole() == 'student' || getUserRole() == 'admin');
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Allow users to read their own data
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Allow users to create their own profile (during registration)
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Allow users to update their own registeredEvents array
+      allow update: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Allow admins to read and update any user (for role management)
+      allow read, update: if isAdmin();
+    }
+    
+    // Events collection
+    match /events/{eventId} {
+      // Anyone can read events (for public events page)
+      allow read: if true;
+      
+      // Only admins can create, update, or delete events
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Sessions collection
+    match /sessions/{sessionId} {
+      // Anyone can read sessions (for event details)
+      allow read: if true;
+      
+      // Only admins can manage sessions
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Registrations collection (composite key: {userId}_{eventId})
+    match /registrations/{registrationId} {
+      // Authenticated users can read all registrations (for client-side filtering)
+      // This is needed because we filter in JavaScript to avoid complex queries
+      allow read: if isAuthenticated();
+      
+      // Users can create their own registrations (for event registration)
+      allow create: if isAuthenticated() && registrationId == request.auth.uid + '_' + request.resource.data.eventId;
+      
+      // Users can delete their own registrations (for unregistering)
+      allow delete: if isAuthenticated() && registrationId.matches('^' + request.auth.uid + '_.*');
+      
+      // No one can update registrations (immutable after creation, except delete)
+      allow update: if false;
+    }
+    
+    // Resources collection (Phase 5)
+    match /resources/{resourceId} {
+      // Authenticated students can read all resources (will check registration in UI)
+      allow read: if isAuthenticated();
+      
+      // Only admins can upload/delete resources
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Feedback collection (for future phases)
+    match /feedback/{feedbackId} {
+      allow read: if isAdmin();
+      allow create: if isStudentOrAdmin();
+      allow update, delete: if isAdmin();
+    }
+    
+    // Gallery collection (for future phases)
+    match /gallery/{imageId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

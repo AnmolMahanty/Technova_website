@@ -31,6 +31,34 @@ const Navbar = () => {
                 TechNova
               </span>
             </Link>
+            
+            {/* Public Navigation Links */}
+            <div className="hidden md:flex items-center ml-8 space-x-4">
+              <Link
+                to="/events"
+                className="text-gray-700 hover:text-galaxy-purple px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Events
+              </Link>
+              <Link
+                to="/about"
+                className="text-gray-700 hover:text-galaxy-purple px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                About
+              </Link>
+              <Link
+                to="/team"
+                className="text-gray-700 hover:text-galaxy-purple px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Team
+              </Link>
+              <Link
+                to="/contact"
+                className="text-gray-700 hover:text-galaxy-purple px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Contact
+              </Link>
+            </div>
           </div>
 
           {/* Navigation Links */}

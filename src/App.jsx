@@ -4,32 +4,15 @@ import { ProtectedRoute, AdminRoute, StudentRoute } from './components/auth/Prot
 import Layout from './components/layout/Layout';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
-
-// Placeholder components (to be implemented in later phases)
-const Home = () => (
-  <div className="max-w-7xl mx-auto px-4 py-12">
-    <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-galaxy-purple to-galaxy-blue bg-clip-text text-transparent">
-      Welcome to TechNova
-    </h1>
-    <p className="text-center text-gray-600 text-lg">
-      Innovation & Technology Club
-    </p>
-  </div>
-);
-
-const StudentDashboard = () => (
-  <div className="max-w-7xl mx-auto px-4 py-8">
-    <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
-    <p className="text-gray-600 mt-2">Welcome to your student portal</p>
-  </div>
-);
-
-const AdminDashboard = () => (
-  <div className="max-w-7xl mx-auto px-4 py-8">
-    <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-    <p className="text-gray-600 mt-2">Manage events and users</p>
-  </div>
-);
+import Home from './components/public/Home';
+import About from './components/public/About';
+import Team from './components/public/Team';
+import Contact from './components/public/Contact';
+import Events from './components/public/Events';
+import StudentDashboard from './components/student/StudentDashboard';
+import AdminDashboard from './components/admin/AdminDashboard';
+import SessionManagement from './components/admin/SessionManagement';
+import ResourceManagement from './components/admin/ResourceManagement';
 
 function App() {
   return (
@@ -39,6 +22,10 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
@@ -58,6 +45,22 @@ function App() {
               element={
                 <AdminRoute>
                   <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/events/:eventId/sessions"
+              element={
+                <AdminRoute>
+                  <SessionManagement />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/events/:eventId/resources"
+              element={
+                <AdminRoute>
+                  <ResourceManagement />
                 </AdminRoute>
               }
             />
